@@ -1,0 +1,47 @@
+{% load static %}
+<nav class="site-nav" id="site-nav">
+  <div class="nav-inner">
+
+    <a href="/" class="nav-logo" aria-label="{{ site_config.brand_name }} home">
+      {% if site_config.logo_image %}
+        <img src="{{ site_config.logo_image.url }}" alt="{{ site_config.brand_name }} logo" class="nav-logo-img" />
+      {% else %}
+        <svg class="nav-logo-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="28" height="28" rx="6" fill="#7c5cfc"/>
+          <path d="M6 21V9l8 7 8-7v12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      {% endif %}
+      <span class="nav-brand">{{ site_config.brand_name }}</span>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="/#about" class="nav-link">About</a></li>
+      <li><a href="/#projects" class="nav-link">Projects</a></li>
+      <li><a href="/#stack" class="nav-link">Stack</a></li>
+      <li><a href="/blog/" class="nav-link">Writing</a></li>
+      <li><a href="/#contact" class="nav-link">Contact</a></li>
+    </ul>
+
+    <div class="nav-right">
+      {% if site_config.is_available %}
+      <span class="nav-badge">
+        <span class="nav-badge-dot"></span>
+        Open to work
+      </span>
+      {% endif %}
+      <a href="/#contact" class="btn btn-primary btn-sm">Hire me</a>
+    </div>
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <a href="/#about">About</a>
+    <a href="/#projects">Projects</a>
+    <a href="/#stack">Stack</a>
+    <a href="/blog/">Writing</a>
+    <a href="/#contact">Contact</a>
+  </div>
+</nav>

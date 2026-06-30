@@ -1,0 +1,25 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ page_title|default:"MinaDXplorer — Software Engineer" }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Adebowale Abidemi Aminat — Software Engineer building backend systems, AI-powered applications, and automation workflows.{% endblock %}" />
+  <link rel="canonical" href="{{ request.canonical_url }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{% block og_title %}{{ page_title|default:"MinaDXplorer" }}{% endblock %}" />
+  <meta property="og:url" content="{{ request.canonical_url }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% include 'partials/nav.html' %}
+  <main>{% block content %}{% endblock %}</main>
+  {% include 'partials/footer.html' %}
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

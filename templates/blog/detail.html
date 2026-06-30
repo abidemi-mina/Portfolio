@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ post.title }} — {{ site_config.brand_name }}{% endblock %}
+
+{% block content %}
+{% if post %}
+
+<!-- Reading progress bar — fills as the reader scrolls through the article -->
+<div class="reading-progress"><div class="reading-progress-fill"></div></div>
+
+<!-- Full-width cover image -->
+{% if post.cover_image %}
+<div class="blog-cover-wrap">
+  <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="blog-cover-img" />
+</div>
+{% endif %}
+
+<!-- Post header -->
+<section class="blog-detail-header{% if not post.cover_image %} blog-detail-header--no-cover{% endif %}">
+  <div class="wrap" style="max-width:780px">
+    <a href="/blog/" class="back-link">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      All writing
+    </a>
+
+    {% if post.tags.all %}
+    <div class="blog-detail-tags">
+      {% for tag in post.tags.all %}<span class="blog-tag">{{ tag.name }}</span>{% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="blog-detail-title">{{ post.title }}</h1>
+
+    {% if post.excerpt %}
+    <p class="blog-detail-excerpt">{{ post.excerpt }}</p>
+    {% endif %}
+
+    <!-- Meta bar -->
+    <div class="blog-detail-meta">
+      <span class="blog-meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        {{ post.created_at|date:"F d, Y" }}
+      </span>
+      <span class="blog-meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        {{ post.read_time }} min read
+      </span>
+      <span class="blog-meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        {{ post.views_count }} views
+      </span>
+      <span class="blog-meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z"/></svg>
+        {{ post.comment_count }} comment{{ post.comment_count|pluralize }}
+      </span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Body + sidebar layout -->
+<div class="blog-detail-layout wrap">
+
+  <!-- Article body -->
+  <article class="blog-detail-body">
+    <div class="prose">{{ rendered_body }}</div>
+
+    <!-- Tags + like row -->
+    <div class="blog-detail-footer">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        {% for tag in post.tags.all %}<span class="blog-tag">{{ tag.name }}</span>{% endfor %}
+      </div>
+
+      <!-- Like + Share actions -->
+      <div class="blog-actions">
+        <button
+          class="like-btn {% if has_liked %}liked{% endif %}"
+          id="like-btn"
+          data-slug="{{ post.slug }}"
+          data-liked="{% if has_liked %}1{% else %}0{% endif %}"
+          aria-label="Like this post"
+          title="{% if has_liked %}Remove like{% else %}Like this post{% endif %}"
+        >
+          <svg class="like-icon" width="18" height="18" fill="{% if has_liked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          </svg>
+          <span class="like-count" id="like-count">{{ like_count }}</span>
+        </button>
+
+        <button class="share-btn" data-share="twitter" aria-label="Share on X" title="Share on X">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+        <button class="share-btn" data-share="linkedin" aria-label="Share on LinkedIn" title="Share on LinkedIn">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </button>
+        <button class="share-btn" data-share="copy" aria-label="Copy link" title="Copy link">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.1 1.1"/></svg>
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- Sidebar -->
+  <aside class="blog-detail-sidebar">
+    <!-- Author card -->
+    <div class="blog-author-card">
+      {% if site_config.profile_image %}
+        <img src="{{ site_config.profile_image.url }}" alt="{{ site_config.site_name }}" class="blog-author-avatar" />
+      {% else %}
+        <div class="blog-author-avatar-placeholder">M</div>
+      {% endif %}
+      <div class="blog-author-name">{{ site_config.site_name }}</div>
+      <div class="blog-author-role">{{ site_config.tagline }}</div>
+      {% if site_config.linkedin_url %}
+      <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:0.75rem;width:100%;justify-content:center">Follow on LinkedIn</a>
+      {% endif %}
+    </div>
+
+    <!-- Stats card -->
+    <div class="blog-stats-card">
+      <div class="blog-stat">
+        <span class="blog-stat-val">{{ post.views_count }}</span>
+        <span class="blog-stat-lbl">Views</span>
+      </div>
+      <div class="blog-stat">
+        <span class="blog-stat-val" id="sidebar-like-count">{{ like_count }}</span>
+        <span class="blog-stat-lbl">Likes</span>
+      </div>
+      <div class="blog-stat">
+        <span class="blog-stat-val">{{ post.comment_count }}</span>
+        <span class="blog-stat-lbl">Comments</span>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- Comments section -->
+<section class="section" id="comments">
+  <div class="wrap" style="max-width:780px">
+
+    <h2 class="headline" style="font-size:1.5rem;margin-bottom:2rem">
+      {{ post.comment_count }} Comment{{ post.comment_count|pluralize }}
+    </h2>
+
+    <!-- Success message -->
+    {% if request.GET.commented %}
+    <div class="comment-success">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Comment submitted — it will appear after moderation.
+    </div>
+    {% endif %}
+
+    <!-- Approved comments -->
+    {% if comments %}
+    <div class="comment-list">
+      {% for comment in comments %}
+      <div class="comment">
+        <div class="comment-avatar">{{ comment.name|first|upper }}</div>
+        <div class="comment-content">
+          <div class="comment-meta">
+            <span class="comment-author">{{ comment.name }}</span>
+            <span class="comment-date">{{ comment.created_at|date:"M d, Y" }}</span>
+          </div>
+          <p class="comment-body">{{ comment.body }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--text-3);font-size:0.88rem;margin-bottom:2rem">No comments yet. Be the first to share your thoughts.</p>
+    {% endif %}
+
+    <!-- Comment form -->
+    <div class="comment-form-wrap" id="comment-form">
+      <h3 class="comment-form-title">Leave a comment</h3>
+      <form method="post" action="{% url 'blog:comment' post.slug %}" class="comment-form-fields" novalidate>
+        {% csrf_token %}
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            {{ comment_form.name }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span style="color:var(--text-3);font-weight:400">(private)</span></label>
+            {{ comment_form.email }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Comment</label>
+          {{ comment_form.body }}
+        </div>
+        <button type="submit" class="btn btn-primary">
+          Post comment
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <p style="font-size:0.75rem;color:var(--text-3);margin-top:0.75rem">Comments are moderated and will appear after review.</p>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{% else %}
+<div class="wrap" style="padding:8rem 0;text-align:center">
+  <h1>Post not found</h1>
+  <a href="/blog/" class="btn btn-primary" style="margin-top:2rem">Back to writing</a>
+</div>
+{% endif %}
+
+{% endblock %}

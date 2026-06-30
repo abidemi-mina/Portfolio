@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Projects — {{ site_config.brand_name }}{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">All work</div>
+    <h1 class="headline" style="font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em">Projects.</h1>
+    <p class="subhead">Every system I have built, end to end.</p>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section">
+  <div class="wrap">
+
+    <!-- Filter bar — categories come from DB, not hardcoded -->
+    <div class="filter-bar">
+      <a href="/projects/" class="filter-chip {% if not category_filter %}filter-chip--on{% endif %}">All</a>
+      {% for cat in all_categories %}
+      <a href="/projects/?category={{ cat.slug }}" class="filter-chip {% if category_filter == cat.slug %}filter-chip--on{% endif %}">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+      <form class="filter-search" method="get" action="/projects/">
+        <input type="text" name="q" value="{{ search_query }}"
+               placeholder="Search..." class="form-input"
+               style="border-radius:999px;padding:0.38rem 0.85rem;min-width:180px" />
+        {% if category_filter %}<input type="hidden" name="category" value="{{ category_filter }}" />{% endif %}
+      </form>
+    </div>
+
+    <!-- Project cards with cover image -->
+    <div class="projects-grid">
+      {% for project in projects %}
+      <div class="project-card" style="padding:0">
+
+        <!-- Cover image -->
+        {% if project.cover_image %}
+          <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="project-cover" />
+        {% elif project.thumbnail %}
+          <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="project-cover" style="aspect-ratio:16/5" />
+        {% else %}
+          <div style="height:6px;background:var(--accent);border-radius:var(--r-lg) var(--r-lg) 0 0;opacity:0.4"></div>
+        {% endif %}
+
+        <div style="padding:1.5rem 1.75rem 1.75rem">
+          <div class="project-card-head">
+            <!-- All categories as tags -->
+            <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+              {% for cat in project.categories.all %}
+              <span style="font-size:0.65rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-3)">{{ cat.name }}</span>
+              {% if not forloop.last %}<span style="color:var(--border-hi);font-size:0.65rem">·</span>{% endif %}
+              {% endfor %}
+            </div>
+            <span class="p-status p-status--{{ project.status }}">{{ project.get_status_display }}</span>
+          </div>
+
+          <div class="project-card-title"><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></div>
+          {% if project.subtitle %}<div class="project-card-sub">{{ project.subtitle }}</div>{% endif %}
+          <p class="project-card-desc">{{ project.description }}</p>
+
+          <div class="project-card-footer">
+            <div class="project-row-tech">
+              {% for tech in project.technologies.all|slice:":3" %}
+              <span class="tech-tag">{{ tech.name }}</span>
+              {% endfor %}
+            </div>
+            <div class="project-row-links">
+              {% if project.github_url %}
+              <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="icon-link" aria-label="GitHub">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+              </a>
+              {% endif %}
+              {% if project.live_url %}
+              <a href="{{ project.live_url }}" target="_blank" rel="noopener" class="icon-link" aria-label="Live">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state" style="grid-column:1/-1">
+        <p>No projects match your filter.</p>
+        <a href="/projects/" class="btn btn-ghost btn-sm" style="margin-top:1rem">Clear filters</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav class="pagination">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">&larr; Previous</a>{% endif %}
+      <span class="pagination-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Next &rarr;</a>{% endif %}
+    </nav>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}
