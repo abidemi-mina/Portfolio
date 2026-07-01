@@ -6,7 +6,7 @@
 <section class="page-hero">
   <div class="wrap">
     <div class="eyebrow">All work</div>
-    <h1 class="headline" style="font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em">Projects.</h1>
+    <h1 class="headline page-title">Projects.</h1>
     <p class="subhead">Every system I have built, end to end.</p>
   </div>
 </section>
@@ -25,8 +25,7 @@
       {% endfor %}
       <form class="filter-search" method="get" action="/projects/">
         <input type="text" name="q" value="{{ search_query }}"
-               placeholder="Search..." class="form-input"
-               style="border-radius:999px;padding:0.38rem 0.85rem;min-width:180px" />
+               placeholder="Search..." class="form-input filter-search-input" />
         {% if category_filter %}<input type="hidden" name="category" value="{{ category_filter }}" />{% endif %}
       </form>
     </div>
@@ -34,24 +33,24 @@
     <!-- Project cards with cover image -->
     <div class="projects-grid">
       {% for project in projects %}
-      <div class="project-card" style="padding:0">
+      <div class="project-card project-card--flush">
 
         <!-- Cover image -->
         {% if project.cover_image %}
           <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="project-cover" />
         {% elif project.thumbnail %}
-          <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="project-cover" style="aspect-ratio:16/5" />
+          <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="project-cover project-cover--wide" />
         {% else %}
-          <div style="height:6px;background:var(--accent);border-radius:var(--r-lg) var(--r-lg) 0 0;opacity:0.4"></div>
+          <div class="project-cover-accent"></div>
         {% endif %}
 
-        <div style="padding:1.5rem 1.75rem 1.75rem">
+        <div class="project-card-body">
           <div class="project-card-head">
             <!-- All categories as tags -->
-            <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+            <div class="project-card-cats">
               {% for cat in project.categories.all %}
-              <span style="font-size:0.65rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-3)">{{ cat.name }}</span>
-              {% if not forloop.last %}<span style="color:var(--border-hi);font-size:0.65rem">·</span>{% endif %}
+              <span class="project-card-cat">{{ cat.name }}</span>
+              {% if not forloop.last %}<span class="project-card-cat-dot">·</span>{% endif %}
               {% endfor %}
             </div>
             <span class="p-status p-status--{{ project.status }}">{{ project.get_status_display }}</span>
@@ -83,19 +82,15 @@
         </div>
       </div>
       {% empty %}
-      <div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state empty-state-full">
         <p>No projects match your filter.</p>
-        <a href="/projects/" class="btn btn-ghost btn-sm" style="margin-top:1rem">Clear filters</a>
+        <a href="/projects/" class="btn btn-ghost btn-sm btn-mt">Clear filters</a>
       </div>
       {% endfor %}
     </div>
 
     {% if is_paginated %}
-    <nav class="pagination">
-      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">&larr; Previous</a>{% endif %}
-      <span class="pagination-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Next &rarr;</a>{% endif %}
-    </nav>
+    {% include 'partials/pagination.html' with query_string=query_string %}
     {% endif %}
 
   </div>

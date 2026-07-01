@@ -1,0 +1,57 @@
+{% comment %}
+Reusable pagination component.
+
+Required context:
+  page_obj       — Django Page object
+  page_range     — paginator.get_elided_page_range(...)
+  query_string   — extra query params to preserve, starts with "&", e.g. "&elpage=2"
+                   Pass empty string "" if there are none.
+
+Optional context:
+  page_param     — name of the querystring key this paginator controls (default "page")
+
+Usage:
+  {% include 'partials/pagination.html' with page_obj=page_obj page_range=page_range query_string=query_string %}
+  {% include 'partials/pagination.html' with page_obj=external_page_obj page_range=external_page_range query_string=external_query_string page_param="elpage" %}
+{% endcomment %}
+
+{% if page_obj.has_other_pages %}
+{% firstof page_param "page" as pparam %}
+<nav class="pager" aria-label="Page navigation">
+  {% if page_obj.has_previous %}
+  <a href="?{{ pparam }}={{ page_obj.previous_page_number }}{{ query_string }}" class="pager-btn pager-prev" aria-label="Previous page">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+    Prev
+  </a>
+  {% else %}
+  <span class="pager-btn pager-prev pager-disabled" aria-disabled="true">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+    Prev
+  </span>
+  {% endif %}
+
+  <div class="pager-numbers">
+    {% for page_num in page_range %}
+      {% if page_num == page_obj.paginator.ELLIPSIS %}
+        <span class="pager-ellipsis">…</span>
+      {% elif page_num == page_obj.number %}
+        <span class="pager-num pager-num--active" aria-current="page">{{ page_num }}</span>
+      {% else %}
+        <a href="?{{ pparam }}={{ page_num }}{{ query_string }}" class="pager-num">{{ page_num }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_next %}
+  <a href="?{{ pparam }}={{ page_obj.next_page_number }}{{ query_string }}" class="pager-btn pager-next" aria-label="Next page">
+    Next
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </a>
+  {% else %}
+  <span class="pager-btn pager-next pager-disabled" aria-disabled="true">
+    Next
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </span>
+  {% endif %}
+</nav>
+{% endif %}

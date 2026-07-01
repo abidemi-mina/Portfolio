@@ -5,7 +5,7 @@ Run: python manage.py seed_portfolio
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 from core.models import SiteConfig, TechStack, Experience, Certification
-from projects.models import Project, Technology, ProjectHighlight, Category
+from projects.models import Project, ProjectHighlight, Category
 import datetime
 
 
@@ -184,27 +184,32 @@ class Command(BaseCommand):
             },
         ]
 
-        # Ensure techs exist
+        # Ensure all referenced techs exist in TechStack (core).
+        # If a name doesn't match an existing TechStack entry it is created
+        # as a plain 'tool' entry so nothing silently disappears.
         all_tech_names = set()
         for p in projects_data:
             all_tech_names.update(p.get('techs', []))
         for name in all_tech_names:
-            Technology.objects.get_or_create(name=name, defaults={'slug': slugify(name)})
+            TechStack.objects.get_or_create(
+                name=name,
+                defaults={'category': 'tool', 'order': 99}
+            )
 
         for pd in projects_data:
             proj, _ = Project.objects.update_or_create(
                 slug=slugify(pd['title']),
                 defaults={
-                    'title': pd['title'],
-                    'subtitle': pd.get('subtitle', ''),
-                    'description': pd['description'],
+                    'title':            pd['title'],
+                    'subtitle':         pd.get('subtitle', ''),
+                    'description':      pd['description'],
                     'long_description': pd.get('long_description', ''),
-                    'status': pd['status'],
-                    'is_featured': pd['is_featured'],
-                    'is_published': True,
-                    'order': pd['order'],
-                    'metric_label': pd.get('metric_label', ''),
-                    'metric_value': pd.get('metric_value', ''),
+                    'status':           pd['status'],
+                    'is_featured':      pd['is_featured'],
+                    'is_published':     True,
+                    'order':            pd['order'],
+                    'metric_label':     pd.get('metric_label', ''),
+                    'metric_value':     pd.get('metric_value', ''),
                 }
             )
             # Assign multiple categories
@@ -213,10 +218,12 @@ class Command(BaseCommand):
                 cat = Category.objects.filter(slug=cat_slug).first()
                 if cat:
                     proj.categories.add(cat)
-            # Assign technologies
+            # Assign technologies via TechStack (core) — match by name
+            proj.technologies.clear()
             for tech_name in pd.get('techs', []):
-                tech = Technology.objects.get(name=tech_name)
-                proj.technologies.add(tech)
+                ts = TechStack.objects.filter(name=tech_name).first()
+                if ts:
+                    proj.technologies.add(ts)
             proj.highlights.all().delete()
             for i, h in enumerate(pd.get('highlights', [])):
                 ProjectHighlight.objects.create(project=proj, text=h, order=i)

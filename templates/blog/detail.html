@@ -17,7 +17,7 @@
 
 <!-- Post header -->
 <section class="blog-detail-header{% if not post.cover_image %} blog-detail-header--no-cover{% endif %}">
-  <div class="wrap" style="max-width:780px">
+  <div class="wrap content-narrow">
     <a href="/blog/" class="back-link">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       All writing
@@ -68,7 +68,7 @@
 
     <!-- Tags + like row -->
     <div class="blog-detail-footer">
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+      <div class="blog-tags-inline">
         {% for tag in post.tags.all %}<span class="blog-tag">{{ tag.name }}</span>{% endfor %}
       </div>
 
@@ -113,7 +113,7 @@
       <div class="blog-author-name">{{ site_config.site_name }}</div>
       <div class="blog-author-role">{{ site_config.tagline }}</div>
       {% if site_config.linkedin_url %}
-      <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:0.75rem;width:100%;justify-content:center">Follow on LinkedIn</a>
+      <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm btn-block-mt">Follow on LinkedIn</a>
       {% endif %}
     </div>
 
@@ -140,9 +140,9 @@
 
 <!-- Comments section -->
 <section class="section" id="comments">
-  <div class="wrap" style="max-width:780px">
+  <div class="wrap content-narrow">
 
-    <h2 class="headline" style="font-size:1.5rem;margin-bottom:2rem">
+    <h2 class="headline comments-title">
       {{ post.comment_count }} Comment{{ post.comment_count|pluralize }}
     </h2>
 
@@ -171,7 +171,7 @@
       {% endfor %}
     </div>
     {% else %}
-    <p style="color:var(--text-3);font-size:0.88rem;margin-bottom:2rem">No comments yet. Be the first to share your thoughts.</p>
+    <p class="comments-empty">No comments yet. Be the first to share your thoughts.</p>
     {% endif %}
 
     <!-- Comment form -->
@@ -185,7 +185,7 @@
             {{ comment_form.name }}
           </div>
           <div class="form-group">
-            <label class="form-label">Email <span style="color:var(--text-3);font-weight:400">(private)</span></label>
+            <label class="form-label">Email <span class="label-muted">(private)</span></label>
             {{ comment_form.email }}
           </div>
         </div>
@@ -197,7 +197,7 @@
           Post comment
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
-        <p style="font-size:0.75rem;color:var(--text-3);margin-top:0.75rem">Comments are moderated and will appear after review.</p>
+        <p class="form-note">Comments are moderated and will appear after review.</p>
       </form>
     </div>
 
@@ -205,9 +205,9 @@
 </section>
 
 {% else %}
-<div class="wrap" style="padding:8rem 0;text-align:center">
+<div class="wrap empty-wrap">
   <h1>Post not found</h1>
-  <a href="/blog/" class="btn btn-primary" style="margin-top:2rem">Back to writing</a>
+  <a href="/blog/" class="btn btn-primary btn-mt">Back to writing</a>
 </div>
 {% endif %}
 

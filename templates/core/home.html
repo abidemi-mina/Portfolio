@@ -122,7 +122,7 @@
           <p>I hold a B.Sc. in Computing from Afe Babalola University, where I also led technical skill-building programmes through NACOS SkillHub.</p>
         </div>
         <div class="about-ctas">
-          <a href="/#projects" class="btn btn-primary btn-sm">See my work</a>
+          <a href="{% url 'projects:list' %}" class="btn btn-primary btn-sm">See my work</a>
           {% if config.linkedin_url %}<a href="{{ config.linkedin_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">LinkedIn &rarr;</a>{% endif %}
         </div>
       </div>
@@ -261,18 +261,27 @@
 <section class="section" id="experience">
   <div class="wrap">
     <div class="eyebrow">Journey</div>
-    <h2 class="headline" style="margin-bottom:2.5rem">Experience.</h2>
+    <h2 class="headline headline-gap-lg">Experience.</h2>
 
-    <div class="experience-list" data-toggle-list data-show-count="4">
+    <div class="projects-grid" data-toggle-list data-show-count="6">
       {% for exp in experiences %}
-      <div class="experience-card" data-toggle-item>
-        <div class="experience-card-top">
-          <span class="timeline-type-badge">{{ exp.get_type_display }}</span>
-          <span class="timeline-period">{{ exp.date_range }}</span>
+      <div class="project-card project-card--flush" data-toggle-item>
+        <div class="project-cover-accent"></div>
+        <div class="project-card-body">
+          <div class="project-card-head">
+            <div class="project-card-cats">
+              <span class="project-card-cat">{{ exp.get_type_display }}</span>
+            </div>
+            <span class="exp-date-badge">{{ exp.date_range }}</span>
+          </div>
+
+          <div class="project-card-title">{{ exp.role }}</div>
+          <div class="project-card-sub">{{ exp.organization }}{% if exp.location %} · {{ exp.location }}{% endif %}</div>
+
+          {% if exp.description %}
+          <div class="project-card-desc">{{ exp.description|linebreaks }}</div>
+          {% endif %}
         </div>
-        <div class="timeline-role">{{ exp.role }}</div>
-        <div class="timeline-org">{{ exp.organization }}{% if exp.location %} · {{ exp.location }}{% endif %}</div>
-        {% if exp.description %}<div class="timeline-desc">{{ exp.description|linebreaks }}</div>{% endif %}
       </div>
       {% endfor %}
     </div>

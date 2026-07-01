@@ -17,18 +17,18 @@
     </a>
 
     <!-- All categories -->
-    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap">
+    <div class="detail-chip-row">
       {% for cat in project.categories.all %}
-      <span style="font-size:0.72rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-3)">{{ cat.name }}</span>
-      {% if not forloop.last %}<span style="color:var(--border-hi)">·</span>{% endif %}
+      <span class="detail-chip">{{ cat.name }}</span>
+      {% if not forloop.last %}<span class="detail-chip-sep">·</span>{% endif %}
       {% endfor %}
-      <span class="p-status p-status--{{ project.status }}" style="margin-left:0.25rem">{{ project.get_status_display }}</span>
+      <span class="p-status p-status--{{ project.status }} status-inline">{{ project.get_status_display }}</span>
     </div>
 
     <h1 class="project-detail-title">{{ project.title }}</h1>
     {% if project.subtitle %}<p class="project-detail-sub">{{ project.subtitle }}</p>{% endif %}
 
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+    <div class="detail-actions">
       {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">GitHub &rarr;</a>{% endif %}
       {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Live demo &rarr;</a>{% endif %}
       {% if project.case_study_url %}<a href="{{ project.case_study_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Case study &rarr;</a>{% endif %}
@@ -43,7 +43,7 @@
     <p class="desc">{{ project.description }}</p>
     {% if project.long_description %}<div class="prose">{{ project.long_description|linebreaks }}</div>{% endif %}
     {% if project.highlights.all %}
-    <div class="detail-highlights" style="margin-top:2rem">
+    <div class="detail-highlights mt-lg">
       <h3>Key features</h3>
       <ul>{% for h in project.highlights.all %}<li>{{ h.text }}</li>{% endfor %}</ul>
     </div>
@@ -53,8 +53,8 @@
   <aside class="project-detail-sidebar">
     <!-- Thumbnail in sidebar if no cover image was shown -->
     {% if project.thumbnail and not project.cover_image %}
-    <div class="sidebar-widget" style="padding:0;overflow:hidden">
-      <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" />
+    <div class="sidebar-widget sidebar-widget--flush">
+      <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="sidebar-thumb" />
     </div>
     {% endif %}
 
@@ -62,9 +62,9 @@
     {% if project.categories.all %}
     <div class="sidebar-widget">
       <div class="sidebar-widget-title">Categories</div>
-      <div style="display:flex;flex-direction:column;gap:0.35rem">
+      <div class="sidebar-stack">
         {% for cat in project.categories.all %}
-        <span style="font-size:0.8rem;color:var(--text-2)">{{ cat.name }}</span>
+        <span class="sidebar-text-item">{{ cat.name }}</span>
         {% endfor %}
       </div>
     </div>
@@ -73,7 +73,7 @@
     <!-- Technologies -->
     <div class="sidebar-widget">
       <div class="sidebar-widget-title">Technologies</div>
-      <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+      <div class="tech-wrap">
         {% for tech in project.technologies.all %}<span class="tech-tag">{{ tech.name }}</span>{% endfor %}
       </div>
     </div>
@@ -92,16 +92,16 @@
 <div class="divider"></div>
 <section class="section">
   <div class="wrap">
-    <h3 style="font-family:var(--font-disp);font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;color:var(--text-1)">Related projects</h3>
-    <div class="projects-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+    <h3 class="section-title-sm">Related projects</h3>
+    <div class="projects-grid projects-grid-related">
       {% for rp in related_projects %}
-      <div class="project-card" style="padding:0">
+      <div class="project-card project-card--flush">
         {% if rp.thumbnail or rp.cover_image %}
-          <img src="{{ rp.thumbnail.url|default:rp.cover_image.url }}" alt="{{ rp.title }}" class="project-cover" style="aspect-ratio:16/5" />
+          <img src="{{ rp.thumbnail.url|default:rp.cover_image.url }}" alt="{{ rp.title }}" class="project-cover project-cover--wide" />
         {% else %}
-          <div style="height:4px;background:var(--accent);border-radius:var(--r-lg) var(--r-lg) 0 0;opacity:0.4"></div>
+          <div class="project-cover-accent-sm"></div>
         {% endif %}
-        <div style="padding:1.25rem 1.5rem 1.5rem">
+        <div class="project-card-body-sm">
           <div class="project-card-title"><a href="{{ rp.get_absolute_url }}">{{ rp.title }}</a></div>
           <p class="project-card-desc">{{ rp.description|truncatewords:20 }}</p>
         </div>
@@ -113,9 +113,9 @@
 {% endif %}
 
 {% else %}
-<div class="wrap" style="padding:8rem 0;text-align:center">
+<div class="wrap empty-wrap">
   <h1>Project not found</h1>
-  <a href="/projects/" class="btn btn-primary" style="margin-top:2rem">Browse projects</a>
+  <a href="/projects/" class="btn btn-primary btn-mt">Browse projects</a>
 </div>
 {% endif %}
 {% endblock %}
